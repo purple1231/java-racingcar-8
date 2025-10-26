@@ -31,6 +31,96 @@ class ApplicationTest extends NsTest {
         );
     }
 
+
+    @Test
+    void 공동_우승() {
+        assertRandomNumberInRangeTest(
+                () -> {
+                    run("pobi,woni", "1");
+                    assertThat(output()).contains("pobi : ", "woni : ", "최종 우승자 : pobi, woni");
+                },
+                STOP, STOP
+        );
+    }
+
+    @Test
+    void 몇명만_우승(){
+        assertRandomNumberInRangeTest(
+                () -> {
+                    run("pobi,woni,gini", "2");
+                    assertThat(output()).contains("pobi : ", "woni : ", "최종 우승자 : pobi, woni");
+                },
+                STOP, STOP, STOP, MOVING_FORWARD, MOVING_FORWARD, STOP
+        );
+    }
+
+    @Test
+    void 시도횟수가0(){
+        assertSimpleTest(() ->
+                assertThatThrownBy(() -> runException("pobi,javaji", "1"))
+                        .isInstanceOf(IllegalArgumentException.class)
+        );
+    }
+
+    @Test
+    void 이름초과(){
+        assertSimpleTest(() ->
+                assertThatThrownBy(() -> runException("pobi,javaji,abcdef", "1"))
+                        .isInstanceOf(IllegalArgumentException.class)
+        );
+    }
+
+    @Test
+    void 이름_중간이_비어있음(){
+        assertSimpleTest(() ->
+                assertThatThrownBy(() -> runException("pobi,,javaji", "1"))
+                        .isInstanceOf(IllegalArgumentException.class)
+        );
+    }
+
+    @Test
+    void 이름_공백(){
+        assertSimpleTest(() ->
+                assertThatThrownBy(() -> runException("", "1"))
+                        .isInstanceOf(IllegalArgumentException.class)
+        );
+    }
+
+    @Test
+    void 이름_빈문자열(){
+        assertSimpleTest(() ->
+                assertThatThrownBy(() -> runException(" ", "1"))
+                        .isInstanceOf(IllegalArgumentException.class)
+        );
+    }
+
+    @Test
+    void 이름_중복(){
+        assertSimpleTest(() ->
+                assertThatThrownBy(() -> runException("pobi,pobi", "1"))
+                        .isInstanceOf(IllegalArgumentException.class)
+        );
+    }
+
+    @Test
+    void 이름_빈문자열_포함(){
+        assertSimpleTest(() ->
+                assertThatThrownBy(() -> runException("pobi, , ,  ", "1"))
+                        .isInstanceOf(IllegalArgumentException.class)
+        );
+    }
+
+    @Test
+    void 숫자가_아님(){
+        assertSimpleTest(() ->
+                assertThatThrownBy(() -> runException("pobi,abc", " "))
+                        .isInstanceOf(IllegalArgumentException.class)
+        );
+    }
+
+
+
+
     @Override
     public void runMain() {
         Application.main(new String[]{});
