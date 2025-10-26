@@ -1,33 +1,20 @@
 package racingcar.domain;
 
-import racingcar.domain.randomOrNot.MoveStrategy;
 
 public class Car {
 
     private final String name;
     private int position = 0;
-    private final MoveStrategy moveStrategy;
 
-
-    public Car(String name, MoveStrategy moveStrategy){
-        validateName(name);
+    public Car(String name){
         this.name = name;
-        this.moveStrategy = moveStrategy;
-
     }
 
-    private void validateName(String name){
-        if(name == null || name.length() > 5){
-            throw new IllegalArgumentException("자동차 이름은 1~5자 이내여야 합니다.");
-        }
-    }
-
-    public void move() {
-        if (moveStrategy.canMove()) {
+    public void move(int count) {
+        if (count >= 4) {
             position++;
         }
     }
-
 
     public String getName() {
         return name;

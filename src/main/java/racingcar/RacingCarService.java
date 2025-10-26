@@ -1,55 +1,76 @@
 package racingcar;
 
+import camp.nextstep.edu.missionutils.Randoms;
 import racingcar.domain.Car;
-import racingcar.domain.randomOrNot.MoveStrategy;
+import racingcar.utils.Parse;
+import racingcar.validator.RacingCarValidator;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RacingCarService {
+    private final RacingCarValidator validator = new RacingCarValidator();
+    private final Parse parser = new Parse();
 
-    public List<Car> createCars(String input, MoveStrategy moveStrategy){
-        input = input.trim();
+    private final List<List<Integer>> roundPositions = new ArrayList<>();
 
-        String[] names = input.split(",");
-        List<Car> cars = new ArrayList<>();
 
-        for(String name: names){
-            //혹시 모르니 trim 한번 더
-            String trimmed = name.trim();
-            if(!trimmed.isEmpty()){
-                cars.add(new Car(trimmed, moveStrategy));
-            }
+
+
+    public List<Car> playGame(String input, int tryCount){
+
+        List<Car> cars = createCars(input);
+
+        for(int i = 0; i < tryCount; i++){
+            loopRound(cars);
+            saveRoundPositions(cars);
         }
+        return cars;
+    }
+    public List<Car> createCars(String input) {
+
+        validator.validateCarName(input);
+        List<Car> cars = parser.parseCars(input);
         return cars;
     }
 
 
-    //
-    public void playGame(List<Car> cars, int tryCount){
-        for(int i = 0; i < tryCount; i++){
-            loopRound(cars);
-            printRound(cars);
-        }
-    }
+
 
     //라운드 루프 반복
     private void loopRound(List<Car> cars){
         for (Car car : cars){
-            car.move();
+
+            int count = getRandomCount();
+            car.move(count);
         }
     }
 
-    // 라운드 결과 출력
-    private void printRound(List<Car> cars){
-        for (Car car : cars){
-            System.out.println(car.getName() + " : " + "-".repeat(car.getPosition()));
-        }
-        System.out.println();
+    private int getRandomCount(){
+        return Randoms.pickNumberInRange(0, 9);
     }
 
 
-    private List<String> findWinners(List<Car> cars){
+
+
+
+    private void saveRoundPositions(List<Car> cars){
+        List<Integer> positions = new ArrayList<>();
+        for (Car car : cars) {
+            positions.add(car.getPosition());
+        }
+        roundPositions.add(positions);
+    }
+
+    public List<List<Integer>> getRoundPositions(){
+        return roundPositions;
+    }
+
+
+
+
+
+    public List<String> findWinners(List<Car> cars){
 
         int max = findMaxPosition(cars);
 
@@ -61,14 +82,7 @@ public class RacingCarService {
         }
         return winners;
 
-
-
-
-
-
-
     }
-
     private int findMaxPosition(List<Car> cars){
         int max = 0;
         for(Car car:cars){
@@ -76,7 +90,6 @@ public class RacingCarService {
                 max = car.getPosition();
             }
         }
-
         return max;
     }
 
