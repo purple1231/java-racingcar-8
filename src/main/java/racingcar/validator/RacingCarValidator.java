@@ -3,9 +3,12 @@ package racingcar.validator;
 import racingcar.domain.Car;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class RacingCarValidator {
+    private static final int MAX_NAME_LENGTH = 5;
 
 
     public void validateCarName(String input){
@@ -14,13 +17,19 @@ public class RacingCarValidator {
         }
 
         String[] names = input.split(",");
-        List<Car> cars = new ArrayList<>();
+        Set<String> uniqueNames = new HashSet<>();
 
         for(String name: names){
             //혹시 모르니 trim 한번 더
             String trimmed = name.trim();
-            if(!trimmed.isEmpty()){
-                cars.add(new Car(trimmed));
+            if(trimmed.length() > MAX_NAME_LENGTH){
+                throw new IllegalArgumentException("자동차 이름은 5자 이하만 가능합니다.");
+            }
+            if(trimmed.isEmpty()){
+                throw new IllegalArgumentException("자동차 이름은 공백일 수 없습니다.");
+            }
+            if (!uniqueNames.add(trimmed)) {
+                throw new IllegalArgumentException("자동차 이름은 중복될 수 없습니다.");
             }
         }
     }
