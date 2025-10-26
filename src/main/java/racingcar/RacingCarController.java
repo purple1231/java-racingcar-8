@@ -19,14 +19,19 @@ public class RacingCarController {
         String inputNames = racingCarInputView.readCarNames();
         int count = racingCarInputView.readTryCount();
 
-        List<Car> finalCars = racingCarService.playGame(inputNames, count);
-        List<String> winnerNames = racingCarService.findWinners(finalCars);
+        racingCarOutputView.printResultMessage();
+
+        List<Car> cars = racingCarService.createCars(inputNames);
 
 
+        for(int i = 0; i < count; i++){
+            racingCarService.playGame(cars);
+            racingCarOutputView.printRoundStatus(cars);
+        }
 
 
-
-
+        List<String> winnerNames = racingCarService.findWinners(cars);
+        racingCarOutputView.printWinners(winnerNames);
     }
 
 }
